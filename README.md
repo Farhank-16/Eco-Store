@@ -32,20 +32,146 @@ A modern, highly responsive, and full-stack E-commerce application built with th
 - **Non-blocking Notifications**: Replaced native browser `alert()` prompts with beautiful, non-intrusive toast notifications via `react-hot-toast`.
 - **Responsive & Stable**: Designed to be mobile-first and fully responsive. Prevented mobile horizontal pull-to-refresh and shifting bugs by setting global `overflow-x: hidden`.
 
+
+### 📡 API Integrations
+- **Backend API**: All frontend actions communicate with the backend API.
+- **Axios**: Used for making HTTP requests to the backend.
+- **Cloudinary**: Integrated for cloud-based image storage.
+
+---
+
 ## 🛠️ Tech Stack
 
-**Frontend:**
-- React (Vite)
-- TailwindCSS v4
-- Zustand (State Management)
-- React Router DOM
-- React Hot Toast
-- Lucide React (Icons)
-- Axios
+### Frontend
+- **React** - UI Library
+- **Zustand** - State Management
+- **React Router DOM** - Routing
+- **Tailwind CSS** - Styling
+- **Axios** - HTTP Client
+- **Lucide React** - Icons
+- **React Hot Toast** - Toast Notifications
 
-**Backend:**
-- Node.js & Express
-- MongoDB (Mongoose ODM)
-- JWT (JSON Web Tokens) & Cookie Parser
-- Cloudinary & Multer (Image Uploads)
-- Bcrypt (Password Hashing)
+### Backend
+- **Node.js** - Runtime Environment
+- **Express** - Web Framework
+- **MongoDB** - Database
+- **Mongoose** - ODM
+- **JSON Web Tokens** - Authentication
+- **Bcrypt** - Password Hashing
+- **Cloudinary** - Image Storage
+- **Multer** - File Upload Middleware
+
+---
+
+## 📂 Project Structure
+
+```
+ECommerce-platform/
+├── backend/                # Backend application
+│   ├── config/             # Database configuration
+│   ├── middleware/         # Custom middleware (auth, error handling)
+│   ├── models/             # Mongoose models (User, Product, Category)
+│   ├── routes/             # API routes
+│   ├── controllers/        # Route controllers
+│   ├── services/           # Business logic
+│   └── server.js           # Application entry point
+│
+├── frontend/               # Frontend application
+│   ├── src/
+│   │   ├── components/     # Reusable UI components
+│   │   ├── pages/          # Page components
+│   │   ├── store/          # Redux store configuration
+│   │   ├── api/            # API service
+│   │   └── App.jsx         # Main application component
+│   ├── public/             # Static assets
+│   └── package.json        # Frontend dependencies
+│
+└── README.md              # Project overview
+```
+
+---
+
+## ⚙️ Setup & Installation
+
+### Prerequisites
+- Node.js (v14 or higher)
+- MongoDB installed and running
+- Cloudinary account (for image uploads)
+
+### Backend Setup
+
+1. Navigate to the backend directory:
+   ```bash
+   cd backend
+   ```
+
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+3. Create a `.env` file in the `backend/` directory:
+   ```env
+   PORT=3000
+   MONGODB_URI=mongodb://localhost:27017/ecommerce
+   JWT_SECRET=your_jwt_secret
+   CLOUDINARY_CLOUD_NAME=your_cloud_name
+   CLOUDINARY_API_KEY=your_api_key
+   CLOUDINARY_API_SECRET=your_api_secret
+   ```
+
+4. Start the backend server:
+   ```bash
+   npm run dev
+   ```
+
+### Frontend Setup
+
+1. Navigate to the frontend directory:
+   ```bash
+   cd frontend
+   ```
+
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+3. Start the frontend development server:
+   ```bash
+   npm run dev
+   ```
+
+The application will be accessible at `http://localhost:5173`.
+
+---
+
+## 📝 Usage
+
+### Initial Setup
+1. **Login** as an admin to access the admin dashboard.
+   - Email: [EMAIL_ADDRESS]`
+   - Password: password123
+
+2. In the **Admin Dashboard**:
+   - **Categories**: Create categories for your products.
+   - **Products**: Add products with images, prices, and descriptions.
+
+3. Browse the **Public Store** and add products to your cart.
+
+4. Proceed to checkout (requires login).
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+---
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+
+https://github.com/Farhank-16/ECommerce-platform/blob/main/README.md
