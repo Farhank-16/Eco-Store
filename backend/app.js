@@ -1,0 +1,28 @@
+import express from 'express';
+import categoryRoutes from "./routes/categoryRoutes.js";
+import productRoutes from "./routes/productRoutes.js";
+import userRoutes from "./routes/authRoutes.js";
+import "dotenv/config";
+import cors from "cors";
+import cookieParser from "cookie-parser";
+import adminRoutes from "./routes/adminRoutes.js";
+
+
+const app = express();  
+// app.use(cors());
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  })
+);
+
+app.use(express.json());
+app.use(cookieParser());
+
+app.use("/category", categoryRoutes);
+app.use("/product", productRoutes);
+app.use("/auth", userRoutes);
+app.use("/admin", adminRoutes);
+
+export default app;
