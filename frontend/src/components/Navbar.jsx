@@ -58,8 +58,8 @@ export default function Navbar() {
             {user ? (
               <>
                 {user.role === 'admin' && (
-                  <Link to="/admin" className="p-2 text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-full transition-colors hidden sm:block" title="Admin Dashboard">
-                    <LayoutDashboard className="w-5 h-5" />
+                  <Link to="/admin" className="p-2 text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-full transition-colors" title="Admin Dashboard">
+                    <LayoutDashboard className="w-6 h-6" />
                   </Link>
                 )}
                 <div className="flex items-center gap-3 pr-4 border-r border-slate-200">
@@ -75,14 +75,16 @@ export default function Navbar() {
                 >
                   <LogOut className="w-5 h-5" />
                 </button>
-                <Link to="/cart" className="relative p-2 text-slate-700 hover:text-indigo-600 transition-colors">
-                  <ShoppingCart className="w-6 h-6" />
-                  {cartItemCount > 0 && (
-                    <span className="absolute top-0 right-0 w-5 h-5 bg-indigo-600 text-white text-[10px] font-bold flex items-center justify-center rounded-full border-2 border-white">
-                      {cartItemCount}
-                    </span>
-                  )}
-                </Link>
+                {user.role !== 'admin' && (
+                  <Link to="/cart" className="relative p-2 text-slate-700 hover:text-indigo-600 transition-colors">
+                    <ShoppingCart className="w-6 h-6" />
+                    {cartItemCount > 0 && (
+                      <span className="absolute top-0 right-0 w-5 h-5 bg-indigo-600 text-white text-[10px] font-bold flex items-center justify-center rounded-full border-2 border-white">
+                        {cartItemCount}
+                      </span>
+                    )}
+                  </Link>
+                )}
               </>
             ) : (
               <>
@@ -103,6 +105,19 @@ export default function Navbar() {
               </>
             )}
           </div>
+        </div>
+      </div>
+      {/* Mobile Search Bar */}
+      <div className="md:hidden border-t border-slate-100 p-3 bg-white">
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+          <input
+            type="text"
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
+            placeholder="Search products..."
+            className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-full focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all text-sm"
+          />
         </div>
       </div>
     </nav>

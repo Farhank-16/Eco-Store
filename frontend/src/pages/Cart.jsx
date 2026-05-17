@@ -117,10 +117,16 @@ export default function Cart() {
             
             <button 
               onClick={handleCheckout}
-              className="w-full py-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl transition-all shadow-lg shadow-indigo-600/30 flex items-center justify-center gap-2"
+              className="w-full py-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl transition-all shadow-lg shadow-indigo-600/30 flex items-center justify-center gap-2 mb-3"
             >
               Proceed to Checkout <ArrowRight className="w-5 h-5" />
             </button>
+            <Link 
+              to="/"
+              className="w-full py-4 bg-slate-50 border border-slate-200 hover:bg-slate-100 text-slate-700 font-bold rounded-xl transition-all flex items-center justify-center gap-2"
+            >
+              Continue Shopping
+            </Link>
           </div>
         </div>
       </div>

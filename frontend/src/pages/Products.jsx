@@ -152,7 +152,7 @@ export default function Products() {
           <p className="text-slate-500 mt-1">Manage your store inventory</p>
         </div>
 
-        <div className="flex items-center gap-3 w-full sm:w-auto">
+        <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto mt-4 sm:mt-0">
           <div className="relative w-full sm:w-64">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
             <input 
@@ -166,7 +166,7 @@ export default function Products() {
           
           <button
             onClick={openAdd}
-            className="bg-indigo-600 shrink-0 text-white px-5 py-2.5 rounded-xl font-medium text-sm hover:bg-indigo-700 transition-all shadow-sm shadow-indigo-600/20 flex items-center gap-2"
+            className="w-full sm:w-auto bg-indigo-600 shrink-0 text-white px-5 py-2.5 rounded-xl font-medium text-sm hover:bg-indigo-700 transition-all shadow-sm shadow-indigo-600/20 flex items-center justify-center gap-2"
           >
             <Plus className="w-4 h-4" /> Add Product
           </button>

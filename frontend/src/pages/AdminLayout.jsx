@@ -1,5 +1,6 @@
+import { useState } from 'react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
-import { Package, Tags, ArrowLeft, LogOut } from 'lucide-react';
+import { Package, Tags, ArrowLeft, LogOut, Menu, X } from 'lucide-react';
 import { useAuthStore } from '../store/useAuthStore';
 
 const NAV = [
@@ -10,13 +11,35 @@ const NAV = [
 export default function AdminLayout() {
   const location = useLocation();
   const { logout, user } = useAuthStore();
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   return (
     <div className="min-h-screen bg-slate-50 flex">
+      {/* Mobile Header */}
+      <div className="md:hidden fixed top-0 left-0 right-0 h-16 bg-white border-b border-slate-100 flex items-center justify-between px-4 z-40">
+        <div className="font-bold text-lg text-slate-800 flex items-center gap-2">
+          <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center text-white font-bold text-sm">
+            A
+          </div>
+          Admin
+        </div>
+        <button onClick={() => setIsSidebarOpen(!isSidebarOpen)} className="p-2 text-slate-600">
+          {isSidebarOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+        </button>
+      </div>
+
+      {/* Overlay for mobile */}
+      {isSidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-slate-900/20 backdrop-blur-sm z-20 md:hidden"
+          onClick={() => setIsSidebarOpen(false)}
+        />
+      )}
+
       {/* Sidebar */}
-      <aside className="w-64 bg-white border-r border-slate-100 flex flex-col fixed h-full shadow-[4px_0_24px_rgb(0,0,0,0.02)]">
+      <aside className={`w-64 bg-white border-r border-slate-100 flex flex-col fixed h-full z-30 shadow-[4px_0_24px_rgb(0,0,0,0.02)] transition-transform duration-300 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0`}>
         <div className="p-6">
-          <div className="flex items-center gap-2 mb-8">
+          {/* <div className=" flex items-center gap-2 mb-8">
             <div className="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white font-bold text-xl shadow-sm shadow-indigo-600/20">
               A
             </div>
@@ -24,7 +47,22 @@ export default function AdminLayout() {
               <span className="font-bold text-xl text-slate-800 tracking-tight block">Admin</span>
               <span className="text-xs text-slate-500 font-medium">Dashboard</span>
             </div>
-          </div>
+          </div> */}
+          <div className="invisible md:visible flex items-center gap-2 mb-8">
+  <div className="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white font-bold text-xl shadow-sm shadow-indigo-600/20">
+    A
+  </div>
+
+  <div>
+    <span className="font-bold text-xl text-slate-800 tracking-tight block">
+      Admin
+    </span>
+
+    <span className="text-xs text-slate-500 font-medium">
+      Dashboard
+    </span>
+  </div>
+</div>
 
           <div className="space-y-1">
             {NAV.map((n) => {
@@ -77,7 +115,7 @@ export default function AdminLayout() {
       </aside>
 
       {/* Main Content */}
-      <main className="ml-64 flex-1 p-8 lg:p-12">
+      <main className="md:ml-64 flex-1 p-4 sm:p-8 lg:p-12 pt-20 md:pt-8 w-full max-w-full overflow-hidden min-h-screen">
         <Outlet />
       </main>
     </div>
