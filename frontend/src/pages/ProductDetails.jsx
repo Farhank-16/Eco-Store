@@ -26,7 +26,7 @@ export default function ProductDetails() {
     const fetchProduct = async () => {
       try {
         const res = await axios.get(
-          `import.meta.env.VITE_BASE_URL/product/get/${slug}`,
+          `${import.meta.env.VITE_BASE_URL}/product/get/${slug}`,
         );
         setProduct(res.data.product);
       } catch (error) {
