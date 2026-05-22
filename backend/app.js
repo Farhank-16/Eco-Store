@@ -6,7 +6,7 @@ import "dotenv/config";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import adminRoutes from "./routes/adminRoutes.js";
-
+import paymentRoutes from "./routes/paymentRoutes.js";
 
 const app = express();  
 // app.use(cors());
@@ -24,5 +24,6 @@ app.use("/category", categoryRoutes);
 app.use("/product", productRoutes);
 app.use("/auth", userRoutes);
 app.use("/admin", adminRoutes);
+app.use("/payment", paymentRoutes);
 
 export default app;

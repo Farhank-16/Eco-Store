@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/useAuthStore';
 import { useCartStore } from '../store/useCartStore';
 import { useSearchStore } from '../store/useSearchStore';
-import { Search, ShoppingCart, User, LogOut, LayoutDashboard } from 'lucide-react';
+import { Search, ShoppingCart, User, LogOut, LayoutDashboard,Package } from 'lucide-react';
 
 export default function Navbar() {
   const { user, logout } = useAuthStore();
@@ -85,6 +85,12 @@ export default function Navbar() {
                     )}
                   </Link>
                 )}
+                {user.role !== 'admin' && (
+                  <Link to="/my-orders" className="p-2 text-slate-700 hover:text-indigo-600 hover:bg-indigo-50 rounded-full transition-colors" title="Admin Dashboard">
+                    <Package className="w-6 h-6" />
+                  </Link>
+                )}
+                
               </>
             ) : (
               <>

@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
-import { Package, Tags, ArrowLeft, LogOut, Menu, X } from 'lucide-react';
+import { Package, Tags, ArrowLeft, LogOut, Menu, X, LayoutDashboard, ShoppingCart } from 'lucide-react';
 import { useAuthStore } from '../store/useAuthStore';
 
 const NAV = [
+  { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, path: '/admin/dashboard' },
+  { id: 'orders', label: 'Orders', icon: ShoppingCart, path: '/admin/orders' },
   { id: 'products', label: 'Products', icon: Package, path: '/admin/products' },
   { id: 'categories', label: 'Categories', icon: Tags, path: '/admin/categories' },
 ];
@@ -14,16 +16,16 @@ export default function AdminLayout() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-slate-50 flex">
+    <div className="min-h-screen bg-stone-50 flex">
       {/* Mobile Header */}
-      <div className="md:hidden fixed top-0 left-0 right-0 h-16 bg-white border-b border-slate-100 flex items-center justify-between px-4 z-40">
-        <div className="font-bold text-lg text-slate-800 flex items-center gap-2">
-          <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center text-white font-bold text-sm">
+      <div className="md:hidden fixed top-0 left-0 right-0 h-16 bg-white border-b border-stone-100 flex items-center justify-between px-4 z-40">
+        <div className="font-bold text-lg text-stone-800 flex items-center gap-2">
+          <div className="w-8 h-8 bg-rose-500 rounded-lg flex items-center justify-center text-white font-bold text-sm">
             A
           </div>
           Admin
         </div>
-        <button onClick={() => setIsSidebarOpen(!isSidebarOpen)} className="p-2 text-slate-600">
+        <button onClick={() => setIsSidebarOpen(!isSidebarOpen)} className="p-2 text-stone-600">
           {isSidebarOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
         </button>
       </div>
@@ -31,13 +33,13 @@ export default function AdminLayout() {
       {/* Overlay for mobile */}
       {isSidebarOpen && (
         <div 
-          className="fixed inset-0 bg-slate-900/20 backdrop-blur-sm z-20 md:hidden"
+          className="fixed inset-0 bg-stone-900/20 backdrop-blur-sm z-20 md:hidden"
           onClick={() => setIsSidebarOpen(false)}
         />
       )}
 
       {/* Sidebar */}
-      <aside className={`w-64 bg-white border-r border-slate-100 flex flex-col fixed h-full z-30 shadow-[4px_0_24px_rgb(0,0,0,0.02)] transition-transform duration-300 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0`}>
+      <aside className={`w-64 bg-white border-r border-stone-100 flex flex-col fixed h-full z-30 shadow-[4px_0_24px_rgb(0,0,0,0.02)] transition-transform duration-300 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0`}>
         <div className="p-6">
           {/* <div className=" flex items-center gap-2 mb-8">
             <div className="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white font-bold text-xl shadow-sm shadow-indigo-600/20">
@@ -49,16 +51,16 @@ export default function AdminLayout() {
             </div>
           </div> */}
           <div className="invisible md:visible flex items-center gap-2 mb-8">
-  <div className="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white font-bold text-xl shadow-sm shadow-indigo-600/20">
+  <div className="w-10 h-10 bg-rose-500 rounded-xl flex items-center justify-center text-white font-bold text-xl shadow-sm shadow-rose-500/20">
     A
   </div>
 
   <div>
-    <span className="font-bold text-xl text-slate-800 tracking-tight block">
+    <span className="font-bold text-xl text-stone-800 tracking-tight block">
       Admin
     </span>
 
-    <span className="text-xs text-slate-500 font-medium">
+    <span className="text-xs text-stone-500 font-medium">
       Dashboard
     </span>
   </div>
@@ -74,11 +76,11 @@ export default function AdminLayout() {
                   to={n.path}
                   className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all ${
                     isActive
-                      ? 'bg-indigo-50 text-indigo-700'
-                      : 'text-slate-500 hover:text-slate-800 hover:bg-slate-50'
+                      ? 'bg-rose-50 text-rose-700'
+                      : 'text-stone-500 hover:text-stone-800 hover:bg-stone-50'
                   }`}
                 >
-                  <Icon className={`w-5 h-5 ${isActive ? 'text-indigo-600' : 'text-slate-400'}`} />
+                  <Icon className={`w-5 h-5 ${isActive ? 'text-rose-500' : 'text-stone-400'}`} />
                   {n.label}
                 </Link>
               );
@@ -86,24 +88,17 @@ export default function AdminLayout() {
           </div>
         </div>
 
-        <div className="mt-auto p-6 border-t border-slate-100">
+        <div className="mt-auto p-6 border-t border-stone-100">
           <div className="flex items-center gap-3 mb-6">
-            <div className="w-10 h-10 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center font-bold">
+            <div className="w-10 h-10 rounded-full bg-stone-100 text-stone-600 flex items-center justify-center font-bold">
               {user?.name?.charAt(0) || 'A'}
             </div>
             <div className="flex flex-col">
-              <span className="text-sm font-semibold text-slate-800">{user?.name || 'Admin User'}</span>
-              <span className="text-xs text-slate-500">{user?.email}</span>
+              <span className="text-sm font-semibold text-stone-800">{user?.name || 'Admin User'}</span>
+              <span className="text-xs text-stone-500">{user?.email}</span>
             </div>
           </div>
           
-          <Link
-            to="/"
-            className="flex items-center gap-3 px-4 py-2.5 w-full rounded-xl text-sm font-medium text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 transition-all mb-2"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Back to Store
-          </Link>
           <button
             onClick={logout}
             className="flex items-center gap-3 px-4 py-2.5 w-full rounded-xl text-sm font-medium text-red-500 hover:bg-red-50 transition-all"

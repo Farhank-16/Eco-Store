@@ -2,17 +2,69 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useCartStore } from '../store/useCartStore';
 import { useAuthStore } from '../store/useAuthStore';
 import { Minus, Plus, Trash2, ArrowRight, ShoppingBag } from 'lucide-react';
+import toast from 'react-hot-toast';
+import { createRazorpayOrder, verifyRazorpayPayment, getRazorpayKey } from '../api';
 
 export default function Cart() {
   const { items, updateQuantity, removeFromCart, getTotalPrice } = useCartStore();
   const { user } = useAuthStore();
   const navigate = useNavigate();
 
-  const handleCheckout = () => {
+  const handleCheckout = async () => {
     if (!user) {
       navigate('/login');
-    } else {
-      alert("Proceeding to checkout...");
+      return;
+    }
+
+    try {
+      const amount = getTotalPrice();
+      if (amount <= 0) return toast.error("Cart is empty");
+
+      // Fetch dynamic key from backend
+      const { key } = await getRazorpayKey();
+      
+      const order = await createRazorpayOrder(amount);
+      
+      const options = {
+        key: key, // Using dynamic key
+        amount: order.amount,
+        currency: order.currency,
+        name: 'EcoStore',
+        description: 'Test Transaction',
+        order_id: order.id,
+        handler: async function (response) {
+          try {
+            await verifyRazorpayPayment({
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_signature: response.razorpay_signature,
+              items: items,
+              amount: amount
+            });
+            toast.success("Payment Successful!");
+            useCartStore.getState().clearCart();
+          } catch (err) {
+            toast.error("Payment Verification Failed!");
+          }
+        },
+        prefill: {
+          name: user.name || 'John Doe',
+          email: user.email || 'johndoe@example.com',
+          contact: '9999999999'
+        },
+        theme: {
+          color: '#f43f5e'
+        }
+      };
+      
+      const rzp1 = new window.Razorpay(options);
+      rzp1.on('payment.failed', function (response){
+        toast.error(response.error.description);
+      });
+      rzp1.open();
+    } catch (error) {
+      console.error(error);
+      toast.error("Error initiating payment");
     }
   };
 
