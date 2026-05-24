@@ -16,11 +16,19 @@ export default function Register() {
     setLoading(true);
     setError("");
     try {
-      await axios.post(`${import.meta.env.VITE_BASE_URL}/auth/register`, {
-        name,
-        email,
-        password,
-      });
+
+      await axios.post(
+        `${import.meta.env.VITE_BASE_URL}/auth/register`,
+        {
+          name,
+          email,
+          password,
+        },
+        {
+          withCredentials: true,
+        },
+      );
+
       navigate("/login");
     } catch (err) {
       setError(err.response?.data?.message || "Registration failed");

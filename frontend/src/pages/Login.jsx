@@ -17,10 +17,11 @@ export default function Login() {
     setLoading(true);
     setError("");
     try {
-      const res = await axios.post(`${import.meta.env.VITE_BASE_URL}/auth/login`, {
-        email,
-        password,
-      });
+      const res = await axios.post(
+        `${import.meta.env.VITE_BASE_URL}/auth/login`,
+        { email, password },
+        { withCredentials: true },
+      );
       login(res.data.user);
       if (res.data.user.role === "admin") {
         navigate("/admin");

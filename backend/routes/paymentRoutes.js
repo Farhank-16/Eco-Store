@@ -4,7 +4,7 @@ import { verifyToken, isAdmin } from "../middleware/auth.js";
 
 const router = express.Router();
 
-router.get("/key", verifyToken, getRazorpayKey);
+router.get("/key", getRazorpayKey);
 router.post("/orders", verifyToken, createOrder);
 router.post("/verify", verifyToken, verifyPayment);
 router.get("/all-orders", verifyToken, isAdmin, getAllOrders);

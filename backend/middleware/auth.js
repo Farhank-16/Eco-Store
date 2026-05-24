@@ -46,6 +46,8 @@ export const isAdmin = (req, res, next) => {
     return res.status(403).json({
       success: false,
       message: "Forbidden, admin access required",
+
+      
     });
 
   }
@@ -53,3 +55,4 @@ export const isAdmin = (req, res, next) => {
   next();
 
 };
+
