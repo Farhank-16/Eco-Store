@@ -1,6 +1,7 @@
 import axios from 'axios';
 
-const BASE = "http://localhost:3000";
+// const BASE = "http://localhost:3000";
+const BASE = import.meta.env.VITE_BASE_URL;
 
 export const getCategories = async () => {
   const res = await axios.get(`${BASE}/category/get`);
@@ -53,7 +54,7 @@ export const verifyRazorpayPayment = async (data) => {
 };
 
 export const getRazorpayKey = async () => {
-  const res = await axios.get(`${BASE}/payment/key`, { withCredentials: true });
+  const res = await axios.get(`${BASE}/payment/key`);
   return res.data;
 };
 

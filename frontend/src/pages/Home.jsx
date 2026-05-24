@@ -18,7 +18,7 @@ export default function Home() {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const res = await axios.get('http://localhost:3000/product/get');
+        const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/product/get`);
         setProducts(res.data.products);
       } catch (error) {
         console.error('Failed to fetch products', error);
