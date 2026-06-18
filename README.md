@@ -1,4 +1,4 @@
-# Full-Stack E-Commerce Platform
+# REBEL - Full-Stack E-Commerce Platform
 
 A modern, highly responsive, and full-stack E-commerce application built with the MERN stack (MongoDB, Express, React, Node.js). This project features a clean, "Soft UI" design aesthetic, role-based access control, and a seamless shopping experience.
 

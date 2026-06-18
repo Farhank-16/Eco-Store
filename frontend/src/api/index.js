@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-// const BASE = "http://localhost:3000";
+// const BASE = "http://localhost:5000";
 const BASE = import.meta.env.VITE_BASE_URL;
 
 export const getCategories = async () => {
@@ -23,8 +23,8 @@ export const deleteCategory = async (id) => {
   return res.data;
 };
 
-export const getProducts = async () => {
-  const res = await axios.get(`${BASE}/product/get`);
+export const getProducts = async (params) => {
+  const res = await axios.get(`${BASE}/product/get`, { params });
   return res.data;
 };
 
@@ -72,3 +72,55 @@ export const getUserOrders = async () => {
   const res = await axios.get(`${BASE}/payment/my-orders`, { withCredentials: true });
   return res.data;
 };
+
+export const getCoupons = async () => {
+  const res = await axios.get(`${BASE}/coupon/get`, { withCredentials: true });
+  return res.data;
+};
+
+export const addCoupon = async (data) => {
+  const res = await axios.post(`${BASE}/coupon/add`, data, { withCredentials: true });
+  return res.data;
+};
+
+export const updateCoupon = async (id, data) => {
+  const res = await axios.put(`${BASE}/coupon/update/${id}`, data, { withCredentials: true });
+  return res.data;
+};
+
+export const deleteCoupon = async (id) => {
+  const res = await axios.delete(`${BASE}/coupon/delete/${id}`, { withCredentials: true });
+  return res.data;
+};
+
+export const applyCoupon = async (code, cartAmount) => {
+  const res = await axios.post(`${BASE}/coupon/apply`, { code, cartAmount }, { withCredentials: true });
+  return res.data;
+};
+
+export const getCollectionConfigs = async () => {
+  const res = await axios.get(`${BASE}/collection/get`);
+  return res.data;
+};
+
+export const updateCollectionConfig = async (key, formData) => {
+  const res = await axios.put(`${BASE}/collection/update/${key}`, formData, {
+    withCredentials: true,
+    headers: { 'Content-Type': 'multipart/form-data' }
+  });
+  return res.data;
+};
+
+export const addCollectionConfig = async (formData) => {
+  const res = await axios.post(`${BASE}/collection/add`, formData, {
+    withCredentials: true,
+    headers: { 'Content-Type': 'multipart/form-data' }
+  });
+  return res.data;
+};
+
+export const deleteCollectionConfig = async (key) => {
+  const res = await axios.delete(`${BASE}/collection/delete/${key}`, { withCredentials: true });
+  return res.data;
+};
+

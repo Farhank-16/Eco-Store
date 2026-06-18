@@ -1,5 +1,213 @@
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700;800;900&family=Montserrat:wght@300;400;500;600;700;800;900&display=swap');
 @import "tailwindcss";
+
+@theme {
+  --font-sans: 'Inter', sans-serif;
+  --font-display: 'Bebas Neue', sans-serif;
+  --font-montserrat: 'Montserrat', sans-serif;
+  
+  /* Spacing Tokens matching Stitch */
+  --spacing-margin-desktop: 48px;
+  --spacing-gutter: 24px;
+  --spacing-margin-mobile: 20px;
+  --spacing-unit-xl: 48px;
+  --spacing-unit-lg: 24px;
+  --spacing-container-max: 1400px;
+  --spacing-unit-md: 16px;
+  --spacing-unit-xs: 4px;
+  --spacing-unit-sm: 8px;
+
+  /* REBEL Core Palette mapped to overrideable CSS variables */
+  --color-primary: var(--primary);
+  --color-primary-container: var(--primary-container);
+  --color-on-primary: var(--on-primary);
+  --color-on-primary-container: var(--on-primary-container);
+  
+  --color-secondary: var(--secondary);
+  --color-secondary-container: var(--secondary-container);
+  --color-on-secondary-container: var(--on-secondary-container);
+  
+  --color-tertiary: var(--tertiary);
+  --color-tertiary-container: var(--tertiary-container);
+  --color-on-tertiary-container: var(--on-tertiary-container);
+
+  --color-background: var(--background);
+  --color-on-background: var(--on-background);
+  
+  --color-surface: var(--surface);
+  --color-surface-dim: var(--surface-dim);
+  --color-surface-bright: var(--surface-bright);
+  --color-surface-container-lowest: var(--surface-container-lowest);
+  --color-surface-container-low: var(--surface-container-low);
+  --color-surface-container: var(--surface-container);
+  --color-surface-container-high: var(--surface-container-high);
+  --color-surface-container-highest: var(--surface-container-highest);
+  
+  --color-on-surface: var(--on-surface);
+  --color-on-surface-variant: var(--on-surface-variant);
+  --color-outline: var(--outline);
+  --color-outline-variant: var(--outline-variant);
+
+  /* Legacy mappings mapped to REBEL colors for compatibility */
+  --color-dark-emerald: var(--primary);
+  --color-dark-emerald-100: var(--secondary);
+  --color-dark-emerald-250: var(--secondary);
+  --color-dark-emerald-300: var(--secondary);
+  --color-dark-emerald-400: var(--secondary);
+  --color-dark-emerald-500: var(--primary);
+  --color-dark-emerald-600: var(--primary);
+  --color-dark-emerald-700: var(--secondary);
+  --color-dark-emerald-800: var(--secondary);
+  --color-dark-emerald-900: var(--background);
+
+  --color-frosted-mint: var(--secondary);
+  --color-frosted-mint-100: var(--secondary);
+  --color-frosted-mint-200: var(--secondary);
+  --color-frosted-mint-300: var(--secondary);
+  --color-frosted-mint-400: var(--secondary);
+  --color-frosted-mint-500: var(--secondary);
+  --color-frosted-mint-600: var(--secondary);
+  --color-frosted-mint-700: var(--secondary);
+  --color-frosted-mint-800: var(--secondary);
+  --color-frosted-mint-900: var(--background);
+
+  --color-evergreen: var(--on-background);
+  --color-evergreen-100: var(--on-background);
+  --color-evergreen-200: var(--on-background);
+  --color-evergreen-300: var(--on-background);
+  --color-evergreen-400: var(--on-background);
+  --color-evergreen-500: var(--on-background);
+  --color-evergreen-600: var(--primary);
+  --color-evergreen-700: var(--primary);
+  --color-evergreen-800: var(--primary);
+  --color-evergreen-900: var(--primary);
+
+  --color-celadon-light: var(--secondary);
+  --color-celadon-light-100: var(--secondary);
+  --color-celadon-light-200: var(--secondary);
+  --color-celadon-light-300: var(--secondary);
+  --color-celadon-light-400: var(--secondary);
+  --color-celadon-light-500: var(--secondary);
+  --color-celadon-light-600: var(--secondary);
+  --color-celadon-light-700: var(--secondary);
+  --color-celadon-light-800: var(--secondary);
+  --color-celadon-light-900: var(--secondary);
+}
+
+:root {
+  /* Default: Dark Theme */
+  --primary: #FF2D55;
+  --primary-container: #7B2CBF;
+  --on-primary: #ffffff;
+  --on-primary-container: #ffffff;
+  
+  --secondary: #7B2CBF;
+  --secondary-container: #7B2CBF;
+  --on-secondary-container: #ffffff;
+  
+  --tertiary: #1a1a1a;
+  --tertiary-container: #222222;
+  --on-tertiary-container: #ffffff;
+
+  --background: #0A0A0A;
+  --on-background: #ffffff;
+  
+  --surface: #121212;
+  --surface-dim: #0d0d0d;
+  --surface-bright: #1c1c1c;
+  --surface-container-lowest: #050505;
+  --surface-container-low: #0a0a0a;
+  --surface-container: #121212;
+  --surface-container-high: #1c1c1c;
+  --surface-container-highest: #282828;
+  
+  --on-surface: #ffffff;
+  --on-surface-variant: #a0a0a0;
+  --outline: #2c2c2c;
+  --outline-variant: #3e3e3e;
+}
+
+:root.light {
+  /* Premium Light Theme */
+  --primary: #E6003A;
+  --primary-container: #FF2D55;
+  --on-primary: #ffffff;
+  --on-primary-container: #ffffff;
+  
+  --secondary: #6B1FAF;
+  --secondary-container: #F3E8FF;
+  --on-secondary-container: #6B1FAF;
+  
+  --tertiary: #ffffff;
+  --tertiary-container: #f1f3f5;
+  --on-tertiary-container: #121212;
+
+  --background: #F8F9FA;
+  --on-background: #121212;
+  
+  --surface: #ffffff;
+  --surface-dim: #f1f3f5;
+  --surface-bright: #ffffff;
+  --surface-container-lowest: #ffffff;
+  --surface-container-low: #f8f9fa;
+  --surface-container: #ffffff;
+  --surface-container-high: #e9ecef;
+  --surface-container-highest: #dee2e6;
+  
+  --on-surface: #121212;
+  --on-surface-variant: #5c636a;
+  --outline: #e9ecef;
+  --outline-variant: #ced4da;
+}
 
 html, body {
   overflow-x: hidden;
+  background-color: var(--color-background);
+  font-family: 'Montserrat', 'Inter', sans-serif;
+  color: var(--color-on-background);
+  scroll-behavior: smooth;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-background);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-outline-variant);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-secondary);
+}
+
+/* Custom animations and styling utilities */
+.rebel-glow-red {
+  box-shadow: 0 0 20px rgba(255, 45, 85, 0.4);
+}
+
+.rebel-glow-purple {
+  box-shadow: 0 0 20px rgba(123, 44, 191, 0.4);
+}
+
+.text-stroke-white {
+  -webkit-text-stroke: 1px rgba(255, 255, 255, 0.3);
+  color: transparent;
+}
+
+@keyframes glitch {
+  0% { transform: translate(0) }
+  20% { transform: translate(-2px, 2px) }
+  40% { transform: translate(-2px, -2px) }
+  60% { transform: translate(2px, 2px) }
+  80% { transform: translate(2px, -2px) }
+  100% { transform: translate(0) }
+}
+
+.rebel-glitch-hover:hover {
+  animation: glitch 0.3s linear infinite;
 }

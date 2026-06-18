@@ -26,7 +26,10 @@ const productSchema = new Schema({
   },
   image: {
     type: String,
-    required: true,
+  },
+  images: {
+    type: [String],
+    default: [],
   },
   description: {
     type: String,
@@ -40,15 +43,50 @@ const productSchema = new Schema({
     ref: "category",
     required: true,
   },
-});
+  collectionType: {
+    type: String,
+    default: "none",
+  },
+  gender: {
+    type: String,
+    enum: ["unisex", "men", "women"],
+    default: "unisex",
+  },
+  rebelProfile: {
+    type: String,
+    default: "",
+  },
+  specifications: {
+    type: [{
+      title: { type: String, required: true },
+      value: { type: String, required: true }
+    }],
+    default: [],
+  },
+  stock: {
+    type: Number,
+    default: 10,
+    min: [0, "Stock cannot be negative"],
+  },
+}, { timestamps: true });
 
-productSchema.pre("save", function () {
+productSchema.pre("save", function (next) {
   const baseSlug = this.name
     .toLowerCase()
     .trim()
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-|-$/g, "");
   this.slug = `${baseSlug}-${Date.now()}`;
+
+  if (this.images && this.images.length > 0) {
+    this.image = this.images[0];
+  } else if (this.image) {
+    this.images = [this.image];
+  } else {
+    return next(new Error("At least one product image is required"));
+  }
+
+  
 });
 
 const Product = model("product", productSchema);

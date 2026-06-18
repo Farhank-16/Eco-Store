@@ -15,8 +15,8 @@ router.get("/get", getProducts);
 router.get("/get/:id", getProductById);
 
 // Admin Only Routes
-router.post("/add", verifyToken, isAdmin, upload.single("image"), addProduct);
-router.put("/update/:id", verifyToken, isAdmin, upload.single("image"), updateProduct);
+router.post("/add", verifyToken, isAdmin, upload.array("images", 10), addProduct);
+router.put("/update/:id", verifyToken, isAdmin, upload.array("images", 10), updateProduct);
 router.delete("/delete/:id", verifyToken, isAdmin, deleteProduct);
 
 export default router;

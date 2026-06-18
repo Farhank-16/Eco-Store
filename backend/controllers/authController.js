@@ -97,14 +97,14 @@ export const loginUser = async (req, res) => {
 
     res.status(200).json({
       message: "Login successful",
-
       token,
-
       user: {
         id: user._id,
         name: user.name,
         email: user.email,
         role: user.role,
+        image: user.image || "",
+        createdAt: user.createdAt,
       },
     });
   } catch (error) {
@@ -115,7 +115,6 @@ export const loginUser = async (req, res) => {
 };
 
 //LOGOUT USER
-
 export const logoutUser = async (req, res) => {
   try {
     res.clearCookie("token", {
@@ -128,5 +127,73 @@ export const logoutUser = async (req, res) => {
       .json({ success: true, message: "User logged out successfully" });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// GET USER PROFILE
+export const getProfile = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.userId).select("-password");
+    if (!user) return res.status(404).json({ message: "User not found" });
+    res.status(200).json({ user });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// UPDATE USER PROFILE
+export const updateProfile = async (req, res) => {
+  try {
+    const { name, email, currentPassword, newPassword } = req.body;
+    const user = await User.findById(req.user.userId);
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    if (name) user.name = name;
+    if (email) {
+      if (!emailRegex.test(email)) {
+        return res.status(400).json({ message: "Please enter a valid email" });
+      }
+      const existingUser = await User.findOne({ email: email.toLowerCase() });
+      if (existingUser && String(existingUser._id) !== String(user._id)) {
+        return res.status(400).json({ message: "Email already in use" });
+      }
+      user.email = email.toLowerCase();
+    }
+
+    if (req.file) {
+      user.image = req.file.path;
+    }
+
+    if (newPassword) {
+      if (!currentPassword) {
+        return res.status(400).json({ message: "Current password is required to change password" });
+      }
+      const isPasswordValid = await bcrypt.compare(currentPassword, user.password);
+      if (!isPasswordValid) {
+        return res.status(400).json({ message: "Incorrect current password" });
+      }
+      // Require uppercase, lowercase, number, special character, 6 to 12 chars matching regex
+      if (!passwordRegex.test(newPassword)) {
+        return res.status(400).json({
+          message: "Password must contain uppercase, lowercase, number and special character and be 6-12 characters",
+        });
+      }
+      user.password = await bcrypt.hash(newPassword, 12);
+    }
+
+    await user.save();
+    res.status(200).json({
+      message: "Profile updated successfully",
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        image: user.image || "",
+        createdAt: user.createdAt,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
 };
