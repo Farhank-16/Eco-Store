@@ -13,6 +13,7 @@ export default function Wishlist() {
 
   const handleAddToCart = (e, product) => {
     e.preventDefault();
+    e.stopPropagation();
     if (!user) {
       toast.error('PLEASE LOG IN TO ADD TO BAG');
       navigate('/login');
@@ -24,6 +25,7 @@ export default function Wishlist() {
 
   const handleRemove = (e, productId) => {
     e.preventDefault();
+    e.stopPropagation();
     removeFromWishlist(productId);
     toast.success('REMOVED FROM GRAILS');
   };

@@ -116,10 +116,10 @@ export default function MyOrders() {
 
                     <div className="flex items-center gap-3 mt-4 pt-4 border-t border-outline/5">
                       <div className="w-12 h-12 overflow-hidden bg-background flex-shrink-0 border border-outline/10">
-                        {firstProduct?.image ? (
+                        {firstProduct?.image || order.products[0]?.image ? (
                           <img 
-                            src={firstProduct.image} 
-                            alt={firstProduct.name}
+                            src={firstProduct?.image || order.products[0]?.image} 
+                            alt={firstProduct?.name || order.products[0]?.name || 'Product Image'}
                             className="w-full h-full object-cover"
                           />
                         ) : (
@@ -229,10 +229,10 @@ export default function MyOrders() {
                   {selectedOrder.products.map((item) => (
                     <div key={item._id} className="flex flex-col sm:flex-row items-start sm:items-center gap-4 p-3 border border-outline/5 hover:border-outline/15 transition-all">
                       <div className="w-16 h-16 overflow-hidden bg-background shrink-0 border border-outline/10">
-                        {item.product?.image ? (
+                        {item.product?.image || item.image ? (
                           <img 
-                            src={item.product.image} 
-                            alt={item.product.name} 
+                            src={item.product?.image || item.image} 
+                            alt={item.product?.name || item.name || 'Product Image'} 
                             className="w-full h-full object-cover" 
                           />
                         ) : (
@@ -243,9 +243,15 @@ export default function MyOrders() {
                       </div>
                       
                       <div className="flex-1">
-                        <Link to={`/product/${item.product?.slug || item.product?._id}`} className="font-display text-base text-white hover:text-primary transition-colors line-clamp-1 uppercase tracking-wide">
-                          {item.product?.name || 'Product item'}
-                        </Link>
+                        {item.product ? (
+                          <Link to={`/product/${item.product.slug || item.product._id}`} className="font-display text-base text-white hover:text-primary transition-colors line-clamp-1 uppercase tracking-wide">
+                            {item.product.name}
+                          </Link>
+                        ) : (
+                          <span className="font-display text-base text-on-surface-variant line-clamp-1 uppercase tracking-wide">
+                            {item.name || 'Deleted Product'}
+                          </span>
+                        )}
                         <p className="text-[9px] text-primary font-bold uppercase tracking-widest mt-0.5">
                           {item.product?.category?.name || 'STREETWEAR'}
                         </p>

@@ -29,6 +29,8 @@ export default function Products() {
   const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategoryFilter, setSelectedCategoryFilter] = useState("all");
+  const [bulkJson, setBulkJson] = useState("");
+  const [bulkErrors, setBulkErrors] = useState([]);
 
   const load = async () => {
     try {
@@ -84,6 +86,66 @@ export default function Products() {
     });
     setModal(null);
     setSelected(null);
+    setBulkJson("");
+    setBulkErrors([]);
+  };
+
+  const openBulkAdd = () => {
+    setBulkJson("");
+    setBulkErrors([]);
+    setError("");
+    setModal("bulk");
+  };
+
+  const handleBulkFileChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      try {
+        const parsed = JSON.parse(event.target.result);
+        setBulkJson(JSON.stringify(parsed, null, 2));
+        setBulkErrors([]);
+        setError("");
+        toast.success("JSON file loaded successfully!");
+      } catch (err) {
+        toast.error("Invalid JSON file format");
+      }
+    };
+    reader.readAsText(file);
+  };
+
+  const handleBulkSubmit = async () => {
+    try {
+      setBulkErrors([]);
+      setError("");
+      
+      let parsed = null;
+      try {
+        parsed = JSON.parse(bulkJson);
+      } catch (err) {
+        return setError("Invalid JSON syntax. Please verify commas and braces.");
+      }
+
+      if (!Array.isArray(parsed)) {
+        return setError("JSON must be a valid array of product objects.");
+      }
+
+      setLoading(true);
+      const res = await api.addBulkProducts(parsed);
+      toast.success(res.message || "Bulk products imported successfully!");
+      
+      await load();
+      closeModal();
+    } catch (e) {
+      if (e.response?.data?.errors) {
+        setBulkErrors(e.response.data.errors);
+      } else {
+        setError(e.response?.data?.message || e.message || "Something went wrong during import");
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   const set = (k, v) => setForm((f) => ({ ...f, [k]: v }));
@@ -209,6 +271,13 @@ export default function Products() {
             className="w-full sm:w-auto bg-primary hover:bg-primary-container text-white px-5 py-2.5 rounded-full font-bold text-xs sm:text-sm hover:scale-[1.02] active:scale-[0.98] transition-all shadow-md shadow-primary/10 flex items-center justify-center gap-2 cursor-pointer shrink-0"
           >
             <Plus className="w-4 h-4" /> Add Product
+          </button>
+
+          <button
+            onClick={openBulkAdd}
+            className="w-full sm:w-auto bg-surface border border-outline-variant/30 hover:bg-surface-container-high text-on-surface px-5 py-2.5 rounded-full font-bold text-xs sm:text-sm hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2 cursor-pointer shrink-0"
+          >
+            <Package className="w-4 h-4 text-primary" /> Bulk Import
           </button>
         </div>
       </header>
@@ -346,7 +415,7 @@ export default function Products() {
       )}
 
       {/* Modal Overlay for Add/Edit Product */}
-      {modal && (
+      {modal && modal !== "bulk" && (
         <Modal title={modal === "add" ? "Add New Product" : "Edit Product"} onClose={closeModal}>
           <div className="space-y-4 max-h-[70vh] overflow-y-auto pr-2 custom-scrollbar">
             <div>
@@ -414,6 +483,35 @@ export default function Products() {
                 <ImageIcon className="w-8 h-8 text-outline mb-2 group-hover:scale-105 transition-transform" />
                 <span className="text-xs font-bold text-on-surface">Click or drag images here</span>
                 <span className="text-[9px] text-on-surface-variant mt-1">Upload one or multiple images</span>
+              </div>
+
+              <div className="mt-3">
+                <label className="text-[10px] font-bold text-on-surface-variant uppercase block mb-1">Add Image by URL</label>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    id="imageUrlInput"
+                    placeholder="Paste image URL here..."
+                    className="flex-1 bg-surface-container-lowest border border-outline-variant/20 rounded-xl px-3.5 py-2 text-xs text-on-surface focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all font-semibold"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const input = document.getElementById("imageUrlInput");
+                      const url = input?.value?.trim();
+                      if (url) {
+                        set("images", [...(form.images || []), { id: Math.random().toString(), file: null, url }]);
+                        input.value = "";
+                        toast.success("Image URL added!");
+                      } else {
+                        toast.error("Please enter a valid URL");
+                      }
+                    }}
+                    className="bg-primary hover:bg-primary-container text-white px-4 py-2 rounded-xl font-bold text-xs cursor-pointer transition-all shadow-sm shadow-primary/10"
+                  >
+                    Add URL
+                  </button>
+                </div>
               </div>
             </div>
 
@@ -565,6 +663,101 @@ export default function Products() {
               >
                 {loading && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
                 {loading ? "Saving..." : "Save Product"}
+              </button>
+            </div>
+          </div>
+        </Modal>
+      )}
+
+      {modal === "bulk" && (
+        <Modal title="Bulk Import Products" onClose={closeModal}>
+          <div className="space-y-4 max-h-[70vh] overflow-y-auto pr-2 custom-scrollbar">
+            <div>
+              <label className="text-[10px] font-bold text-on-surface-variant uppercase block mb-1">
+                Upload JSON File
+              </label>
+              <input 
+                type="file"
+                accept=".json"
+                onChange={handleBulkFileChange}
+                className="w-full text-xs text-on-surface file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-primary file:text-white hover:file:bg-primary-container cursor-pointer"
+              />
+            </div>
+
+            <div>
+              <div className="flex justify-between items-center mb-1">
+                <label className="text-[10px] font-bold text-on-surface-variant uppercase block">
+                  Paste JSON Array
+                </label>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const sample = [
+                      {
+                        name: "Premium Oversized Streetwear Hoodie",
+                        originalPrice: 2999,
+                        discountedPrice: 2499,
+                        image: "https://images.unsplash.com/photo-1556821840-3a63f95609a7",
+                        description: "Heavyweight drop tailored for comfortable everyday wear.",
+                        category: "Hoodies",
+                        collectionType: "none",
+                        gender: "unisex",
+                        rebelProfile: "Dark and sleek silhouette.",
+                        specifications: [
+                          { title: "Fabric", value: "450 GSM French Terry Cotton" }
+                        ],
+                        stock: 25
+                      }
+                    ];
+                    setBulkJson(JSON.stringify(sample, null, 2));
+                  }}
+                  className="text-[10px] text-primary hover:underline font-bold uppercase tracking-wider cursor-pointer"
+                >
+                  Load Sample Template
+                </button>
+              </div>
+              <textarea 
+                value={bulkJson}
+                onChange={(e) => setBulkJson(e.target.value)}
+                rows={10}
+                placeholder='[ { "name": "...", "originalPrice": 2999, ... } ]'
+                className="w-full bg-surface-container-lowest border border-outline-variant/20 rounded-xl px-3.5 py-2.5 text-xs font-mono text-on-surface focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all resize-none"
+              />
+            </div>
+
+            {bulkErrors.length > 0 && (
+              <div className="bg-red-50 border border-red-200 text-red-700 p-4 rounded-xl text-xs font-semibold space-y-1">
+                <p className="font-bold flex items-center gap-1 mb-1 text-red-800">
+                  <AlertTriangle className="w-4 h-4 shrink-0" /> Import Errors:
+                </p>
+                <ul className="list-disc pl-4 space-y-1 max-h-[120px] overflow-y-auto">
+                  {bulkErrors.map((err, i) => (
+                    <li key={i}>{err}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {error && (
+              <div className="bg-red-50 border border-red-200 text-red-700 p-3 rounded-xl text-xs font-bold flex items-center gap-1">
+                <AlertTriangle className="w-4 h-4 shrink-0" /> {error}
+              </div>
+            )}
+
+            <div className="flex gap-3 pt-4 border-t border-outline-variant/10 mt-6">
+              <button 
+                onClick={closeModal} 
+                className="flex-1 bg-surface border border-outline-variant/30 text-on-surface-variant font-bold py-2.5 rounded-xl transition-all cursor-pointer text-xs"
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={handleBulkSubmit} 
+                disabled={loading || !bulkJson} 
+                className="flex-1 bg-primary hover:bg-primary-container text-white font-bold py-2.5 rounded-xl transition-all disabled:opacity-75 flex items-center justify-center gap-1.5 cursor-pointer text-xs shadow-sm shadow-primary/10"
+              >
+                {loading && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+                {loading ? "Importing..." : "Import Products"}
               </button>
             </div>
           </div>

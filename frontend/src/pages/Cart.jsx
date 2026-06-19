@@ -5,7 +5,7 @@ import { useCartStore } from '../store/useCartStore';
 import { useAuthStore } from '../store/useAuthStore';
 import { Minus, Plus, Trash2, ArrowRight, ShoppingBag, Tag, Loader2, X, Shield, Flame, ShoppingCart } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { createRazorpayOrder, verifyRazorpayPayment, getRazorpayKey, applyCoupon } from '../api';
+import { createRazorpayOrder, verifyRazorpayPayment, getRazorpayKey, applyCoupon, getActiveCoupons } from '../api';
 
 export default function Cart() {
   const { items, updateQuantity, removeFromCart, getTotalPrice, addToCart } = useCartStore();
@@ -16,6 +16,7 @@ export default function Cart() {
   const [couponCode, setCouponCode] = useState("");
   const [appliedCoupon, setAppliedCoupon] = useState(null); // { code, discountAmount, discountValue, discountType }
   const [couponLoading, setCouponLoading] = useState(false);
+  const [activeCoupons, setActiveCoupons] = useState([]);
 
   // Recommendation states
   const [recommendations, setRecommendations] = useState([]);
@@ -41,6 +42,40 @@ export default function Cart() {
     };
     fetchRecommendations();
   }, [items]);
+
+  useEffect(() => {
+    const fetchActiveCoupons = async () => {
+      if (!user) return;
+      try {
+        const data = await getActiveCoupons();
+        if (data && data.success) {
+          setActiveCoupons(data.coupons || []);
+        }
+      } catch (error) {
+        console.error("Failed to fetch active coupons", error);
+      }
+    };
+    fetchActiveCoupons();
+  }, [user]);
+
+  const handleApplyDirect = async (code) => {
+    setCouponLoading(true);
+    try {
+      const data = await applyCoupon(code, subtotal);
+      setAppliedCoupon({
+        code: data.coupon.code,
+        discountAmount: data.discountAmount,
+        discountValue: data.coupon.discountValue,
+        discountType: data.coupon.discountType,
+      });
+      setCouponCode(code);
+      toast.success("COUPON APPLIED SUCCESSFULLY!");
+    } catch (error) {
+      toast.error(error.response?.data?.message || "INVALID COUPON CODE");
+    } finally {
+      setCouponLoading(false);
+    }
+  };
 
   const handleAddRecommendation = (e, product) => {
     e.preventDefault();
@@ -275,7 +310,7 @@ export default function Cart() {
                   {!appliedCoupon && (
                     <div className="mb-6 pt-4 border-t border-outline/10">
                       <label className="text-[10px] font-extrabold text-on-surface-variant uppercase tracking-widest block mb-2">PROMO CODE</label>
-                      <div className="flex gap-2">
+                      <div className="flex gap-2 mb-4">
                         <input 
                           type="text" 
                           placeholder="ENTER CODE" 
@@ -291,6 +326,49 @@ export default function Cart() {
                           {couponLoading && <Loader2 className="w-3 h-3 animate-spin" />} Apply
                         </button>
                       </div>
+
+                      {/* Display active coupons to click and apply */}
+                      {activeCoupons.length > 0 && (
+                        <div className="space-y-2 mt-4 pt-3 border-t border-outline/5">
+                          <p className="text-[9px] font-extrabold text-on-surface-variant uppercase tracking-widest mb-1.5 flex items-center gap-1">
+                            <Tag className="w-3 h-3 text-primary" /> AVAILABLE DROPS / COUPONS
+                          </p>
+                          <div className="grid grid-cols-1 gap-2 max-h-[140px] overflow-y-auto pr-1">
+                            {activeCoupons.map((c) => {
+                              const isEligible = subtotal >= c.minCartAmount;
+                              return (
+                                <button
+                                  key={c._id}
+                                  disabled={!isEligible}
+                                  onClick={() => handleApplyDirect(c.code)}
+                                  className={`text-left p-2.5 border transition-all duration-300 w-full flex flex-col justify-center rounded-none relative overflow-hidden group select-none ${
+                                    isEligible 
+                                      ? 'border-primary/20 bg-primary/5 hover:bg-primary/10 cursor-pointer hover:border-primary' 
+                                      : 'border-outline/5 bg-surface-container-low opacity-50 cursor-not-allowed'
+                                  }`}
+                                >
+                                  <div className="flex justify-between items-center gap-2">
+                                    <span className="text-[10px] font-extrabold text-white uppercase tracking-widest font-display">{c.code}</span>
+                                    <span className="text-[10px] font-extrabold text-primary uppercase">
+                                      {c.discountType === 'percentage' ? `${c.discountValue}% OFF` : `₹${c.discountValue} OFF`}
+                                    </span>
+                                  </div>
+                                  <div className="flex justify-between items-center gap-2 mt-1">
+                                    <p className="text-[8px] text-on-surface-variant uppercase font-bold tracking-wider">
+                                      {c.minCartAmount > 0 ? `MIN SPEND: ₹${c.minCartAmount}` : 'NO MIN SPEND'}
+                                    </p>
+                                    {!isEligible && (
+                                      <p className="text-[8px] text-primary/70 font-extrabold uppercase tracking-widest">
+                                        NEED ₹{c.minCartAmount - subtotal} MORE
+                                      </p>
+                                    )}
+                                  </div>
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      )}
                     </div>
                   )}
 

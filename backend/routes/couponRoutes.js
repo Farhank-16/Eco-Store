@@ -6,12 +6,14 @@ import {
   updateCoupon,
   deleteCoupon,
   applyCoupon,
+  getActiveCoupons,
 } from "../controllers/couponController.js";
 
 const router = Router();
 
 // Apply Coupon (Public/Authenticated)
 router.post("/apply", verifyToken, applyCoupon);
+router.get("/active", verifyToken, getActiveCoupons);
 
 // Admin Only Routes
 router.get("/get", verifyToken, isAdmin, getCoupons);

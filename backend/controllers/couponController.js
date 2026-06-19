@@ -72,6 +72,11 @@ export const applyCoupon = async (req, res) => {
       return res.status(404).json({ success: false, message: "Invalid or inactive coupon code" });
     }
 
+    const userId = req.user.userId || req.user._id;
+    if (coupon.usedBy && coupon.usedBy.includes(userId)) {
+      return res.status(400).json({ success: false, message: "You have already used this coupon code!" });
+    }
+
     if (coupon.expiryDate && new Date(coupon.expiryDate) < new Date()) {
       return res.status(400).json({ success: false, message: "Coupon has expired" });
     }
@@ -105,6 +110,28 @@ export const applyCoupon = async (req, res) => {
       discountAmount: Number(discount.toFixed(2)),
       finalAmount: Number((cartAmount - discount).toFixed(2)),
     });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export const getActiveCoupons = async (req, res) => {
+  try {
+    const userId = req.user.userId || req.user._id;
+    const coupons = await Coupon.find({
+      isActive: true,
+      $or: [
+        { expiryDate: { $exists: false } },
+        { expiryDate: null },
+        { expiryDate: { $gt: new Date() } }
+      ]
+    }).sort({ createdAt: -1 });
+
+    const availableCoupons = coupons.filter(
+      (c) => !c.usedBy || !c.usedBy.includes(userId)
+    );
+
+    res.status(200).json({ success: true, coupons: availableCoupons });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }

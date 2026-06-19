@@ -33,6 +33,11 @@ export const addProduct = async (data) => {
   return res.data;
 };
 
+export const addBulkProducts = async (products) => {
+  const res = await axios.post(`${BASE}/product/add-bulk`, { products }, { withCredentials: true });
+  return res.data;
+};
+
 export const updateProduct = async (id, data) => {
   const res = await axios.put(`${BASE}/product/update/${id}`, data);
   return res.data;
@@ -95,6 +100,11 @@ export const deleteCoupon = async (id) => {
 
 export const applyCoupon = async (code, cartAmount) => {
   const res = await axios.post(`${BASE}/coupon/apply`, { code, cartAmount }, { withCredentials: true });
+  return res.data;
+};
+
+export const getActiveCoupons = async () => {
+  const res = await axios.get(`${BASE}/coupon/active`, { withCredentials: true });
   return res.data;
 };
 

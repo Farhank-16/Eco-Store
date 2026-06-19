@@ -369,15 +369,30 @@ export default function AdminOrders() {
                 <div className="space-y-3 bg-surface-container-low/50 p-3 rounded-2xl border border-outline-variant/10">
                   {selectedOrder.products?.map((item, idx) => {
                     const productObj = item.product || item;
-                    const prodName = productObj?.name || "Unknown Streetwear Product";
+                    const prodName = productObj?.name || item.name || "Unknown Streetwear Product";
                     const prodPrice = productObj?.discountedPrice || productObj?.originalPrice || item.price || 0;
                     return (
-                      <div key={idx} className="flex justify-between items-center text-xs">
-                        <div className="min-w-0">
-                          <p className="font-extrabold text-on-surface truncate">{prodName}</p>
-                          <p className="text-[10px] text-on-surface-variant mt-0.5">Quantity: {item.quantity || 1}</p>
+                      <div key={idx} className="flex justify-between items-center text-xs gap-3">
+                        <div className="flex items-center gap-3 min-w-0">
+                          <div className="w-10 h-10 overflow-hidden bg-background shrink-0 border border-outline-variant/15 rounded-lg">
+                            {productObj?.image || item.image ? (
+                              <img 
+                                src={productObj?.image || item.image} 
+                                alt={prodName} 
+                                className="w-full h-full object-cover" 
+                              />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center text-on-surface-variant bg-surface-container-high">
+                                <ShoppingBag className="w-4 h-4" />
+                              </div>
+                            )}
+                          </div>
+                          <div className="min-w-0">
+                            <p className="font-extrabold text-on-surface truncate">{prodName}</p>
+                            <p className="text-[10px] text-on-surface-variant mt-0.5">Quantity: {item.quantity || 1}</p>
+                          </div>
                         </div>
-                        <span className="font-bold text-on-surface text-right">
+                        <span className="font-bold text-on-surface text-right shrink-0">
                           ₹{(prodPrice * (item.quantity || 1)).toFixed(2)}
                         </span>
                       </div>

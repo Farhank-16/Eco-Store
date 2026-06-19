@@ -1,6 +1,7 @@
 import Razorpay from "razorpay";
 import crypto from "crypto";
 import {Order} from "../models/orderModel.js";
+import Coupon from "../models/couponModel.js";
 
 
 export const getRazorpayKey = (req, res) => {
@@ -39,6 +40,7 @@ export const verifyPayment = async (req, res) => {
       razorpay_signature,
       items,
       amount,
+      couponCode,
     } = req.body;
 
     const sign = razorpay_order_id + "|" + razorpay_payment_id;
@@ -52,6 +54,8 @@ export const verifyPayment = async (req, res) => {
       const order = new Order({
         products: items.map(i => ({
           product: i._id,
+          name: i.name,
+          image: i.image,
           quantity: i.quantity,
           price: i.discountedPrice && i.discountedPrice < i.originalPrice ? i.discountedPrice : i.originalPrice,
         })),
@@ -67,6 +71,15 @@ export const verifyPayment = async (req, res) => {
 
       await order.save();
 
+      // If a coupon code was used, save user's ID to its usedBy list to prevent reuse
+      if (couponCode) {
+        const userId = req.user.userId || req.user._id;
+        await Coupon.findOneAndUpdate(
+          { code: couponCode.toUpperCase() },
+          { $addToSet: { usedBy: userId } }
+        );
+      }
+
       return res.status(200).json({ message: "Payment verified successfully" });
     } else {
       return res.status(400).json({ message: "Invalid signature sent!" });
@@ -79,7 +92,14 @@ export const verifyPayment = async (req, res) => {
 export const getAllOrders = async (req, res) => {
   try {
     const orders = await Order.find({})
-      .populate("products.product", "name price")
+      .populate({
+        path: "products.product",
+        select: "name price image slug category",
+        populate: {
+          path: "category",
+          select: "name"
+        }
+      })
       .populate("buyer", "name email")
       .sort({ createdAt: -1 });
     res.status(200).json(orders);
@@ -102,7 +122,14 @@ export const updateOrderStatus = async (req, res) => {
 export const getUserOrders = async (req, res) => {
   try {
     const orders = await Order.find({ buyer: req.user.userId || req.user._id })
-      .populate("products.product", "name price image slug")
+      .populate({
+        path: "products.product",
+        select: "name price image slug category",
+        populate: {
+          path: "category",
+          select: "name"
+        }
+      })
       .sort({ createdAt: -1 });
     res.status(200).json(orders);
   } catch (error) {
