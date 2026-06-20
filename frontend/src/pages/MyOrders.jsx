@@ -28,7 +28,7 @@ export default function MyOrders() {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center min-h-[60vh] bg-background text-white">
+      <div className="flex justify-center items-center min-h-[60vh] bg-background text-on-background">
         <Loader2 className="animate-spin h-8 w-8 text-primary" />
       </div>
     );
@@ -36,11 +36,11 @@ export default function MyOrders() {
 
   if (orders.length === 0) {
     return (
-      <div className="max-w-2xl mx-auto py-20 flex flex-col items-center justify-center text-center bg-surface border border-outline/10 p-8 my-12 text-white">
+      <div className="max-w-2xl mx-auto py-20 flex flex-col items-center justify-center text-center bg-surface border border-outline/10 p-8 my-12 text-on-surface">
         <div className="w-20 h-20 mb-6 bg-background border border-outline/15 flex items-center justify-center">
           <Package className="w-8 h-8 text-primary" />
         </div>
-        <h2 className="font-display text-2xl tracking-widest text-white mb-2 uppercase">NO COPS FOUND</h2>
+        <h2 className="font-display text-2xl tracking-widest text-on-surface mb-2 uppercase">NO COPS FOUND</h2>
         <p className="text-on-surface-variant text-xs uppercase tracking-wider max-w-sm mx-auto mb-8 leading-relaxed font-semibold">
           Looks like you haven't secured any drop pieces yet. Tap below to check current drops.
         </p>
@@ -63,11 +63,11 @@ export default function MyOrders() {
   const activeStep = selectedOrder ? getStatusStep(selectedOrder.status) : 1;
 
   return (
-    <div className="bg-background min-h-screen text-white pt-20 pb-24">
+    <div className="bg-background min-h-screen text-on-background pt-20 pb-24">
       <main className="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-12">
         {/* Page Header */}
         <div className="mb-12 border-b border-outline/10 pb-6">
-          <h1 className="font-display text-4xl sm:text-5xl font-extrabold tracking-widest text-white uppercase">ORDER ARCHIVE</h1>
+          <h1 className="font-display text-4xl sm:text-5xl font-extrabold tracking-widest text-on-background uppercase">ORDER ARCHIVE</h1>
           <p className="text-on-surface-variant text-xs sm:text-sm uppercase tracking-wider mt-2 font-semibold">
             Track, manage, and view the history of your premium drop cops.
           </p>
@@ -93,7 +93,7 @@ export default function MyOrders() {
                     className={`bg-surface p-5 border cursor-pointer transition-all duration-300 ${
                       isSelected 
                         ? 'border-primary' 
-                        : 'border-outline/10 hover:border-white/20'
+                        : 'border-outline/10 hover:border-on-surface/20'
                     }`}
                   >
                     <div className="flex justify-between items-start mb-3">
@@ -101,14 +101,14 @@ export default function MyOrders() {
                         <p className="text-[9px] font-bold text-on-surface-variant uppercase tracking-widest">
                           ID #{order._id.slice(-8).toUpperCase()}
                         </p>
-                        <p className="font-display text-base text-white mt-1 uppercase tracking-wider">
+                        <p className="font-display text-base text-on-surface mt-1 uppercase tracking-wider">
                           {new Date(order.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                         </p>
                       </div>
                       <span className={`px-2.5 py-0.5 text-[9px] font-extrabold uppercase tracking-widest ${
                         order.status === 'delivered' 
                           ? 'bg-primary/20 text-primary border border-primary/30' 
-                          : 'bg-white/10 text-white border border-white/20'
+                          : 'bg-surface-container-high text-on-surface border border-outline'
                       }`}>
                         {order.status.toUpperCase()}
                       </span>
@@ -129,7 +129,7 @@ export default function MyOrders() {
                         )}
                       </div>
                       <div className="flex-1">
-                        <p className="text-xs font-bold text-white uppercase tracking-wider">
+                        <p className="text-xs font-bold text-on-surface uppercase tracking-wider">
                           {totalItemsCount} {totalItemsCount === 1 ? 'PIECE' : 'PIECES'} • ₹{order.totalAmount}
                         </p>
                         <p className="text-[10px] text-on-surface-variant font-semibold uppercase tracking-widest mt-0.5">
@@ -147,10 +147,10 @@ export default function MyOrders() {
           {selectedOrder && (
             <div className="lg:col-span-8 space-y-6">
               {/* Tracking Visualizer Card */}
-              <section className="bg-surface p-6 sm:p-8 border border-outline/10 overflow-hidden">
+              <section className="bg-surface p-6 sm:p-8 border border-outline/10 overflow-hidden text-on-surface">
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8 border-b border-outline/10 pb-6">
                   <div>
-                    <h2 className="font-display text-2xl tracking-widest text-white uppercase">ORDER TRACKING</h2>
+                    <h2 className="font-display text-2xl tracking-widest text-on-surface uppercase">ORDER TRACKING</h2>
                     <p className="text-xs text-on-surface-variant font-bold uppercase tracking-wider mt-1">
                       CURRENT RELEASE STATUS: <span className="text-primary">{selectedOrder.status.toUpperCase()}</span>
                     </p>
@@ -159,7 +159,7 @@ export default function MyOrders() {
                     <button className="px-5 py-2.5 bg-primary hover:bg-primary-container text-white text-[10px] font-display tracking-widest uppercase transition-colors flex items-center gap-1.5 cursor-pointer">
                       <Truck className="w-4 h-4" /> FULL TRACKING
                     </button>
-                    <button className="px-5 py-2.5 border border-outline/15 text-on-surface-variant text-[10px] font-display tracking-widest uppercase hover:text-white hover:border-white/50 transition-colors cursor-pointer">
+                    <button className="px-5 py-2.5 border border-outline/15 text-on-surface-variant text-[10px] font-display tracking-widest uppercase hover:text-on-surface hover:border-on-surface transition-colors cursor-pointer">
                       NEED HELP?
                     </button>
                   </div>
@@ -219,9 +219,9 @@ export default function MyOrders() {
               </section>
 
               {/* Package Contents */}
-              <div className="bg-surface p-6 sm:p-8 border border-outline/10">
+              <div className="bg-surface p-6 sm:p-8 border border-outline/10 text-on-surface">
                 <div className="flex items-center justify-between mb-6 border-b border-outline/10 pb-4">
-                  <h3 className="font-display text-lg tracking-widest text-white uppercase">PACKAGE CONTENTS</h3>
+                  <h3 className="font-display text-lg tracking-widest text-on-surface uppercase">PACKAGE CONTENTS</h3>
                   <span className="text-xs font-bold text-primary uppercase tracking-widest">ORDER TOTAL: ₹{selectedOrder.totalAmount}</span>
                 </div>
 
@@ -244,7 +244,7 @@ export default function MyOrders() {
                       
                       <div className="flex-1">
                         {item.product ? (
-                          <Link to={`/product/${item.product.slug || item.product._id}`} className="font-display text-base text-white hover:text-primary transition-colors line-clamp-1 uppercase tracking-wide">
+                          <Link to={`/product/${item.product.slug || item.product._id}`} className="font-display text-base text-on-surface hover:text-primary transition-colors line-clamp-1 uppercase tracking-wide">
                             {item.product.name}
                           </Link>
                         ) : (
@@ -256,10 +256,10 @@ export default function MyOrders() {
                           {item.product?.category?.name || 'STREETWEAR'}
                         </p>
                       </div>
-
+ 
                       <div className="flex sm:flex-col items-end justify-between sm:justify-center w-full sm:w-auto mt-2 sm:mt-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-outline/10">
                         <p className="text-xs text-on-surface-variant uppercase tracking-wider font-semibold">QTY: {item.quantity}</p>
-                        <p className="font-extrabold text-sm text-white sm:mt-1">₹{item.price}</p>
+                        <p className="font-extrabold text-sm text-on-surface sm:mt-1">₹{item.price}</p>
                       </div>
                     </div>
                   ))}

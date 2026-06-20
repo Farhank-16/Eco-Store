@@ -25,6 +25,24 @@ export default function Navbar() {
   const [suggestions, setSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
 
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    setSearchQuery(inputValue);
+    setShowSuggestions(false);
+    if (location.pathname !== "/products") {
+      navigate('/products');
+    }
+  };
+
+  const handleMobileSearchSubmit = (e) => {
+    e.preventDefault();
+    setSearchQuery(inputValue);
+    setMobileMenuOpen(false);
+    if (location.pathname !== "/products") {
+      navigate('/products');
+    }
+  };
+
   // Monitor scroll for transparent -> dark backdrop
   useEffect(() => {
     const handleScroll = () => {
@@ -103,31 +121,32 @@ export default function Navbar() {
         ? "bg-transparent border-transparent py-5" 
         : "bg-background/95 backdrop-blur-xl border-b border-outline/10 py-3.5 shadow-[0_4px_30px_rgba(0,0,0,0.8)]"
     }`}>
-      <div className="flex justify-between items-center px-margin-mobile md:px-margin-desktop w-full max-w-container-max mx-auto">
+      <div className="flex justify-between items-center px-margin-mobile min-[1150px]:px-margin-desktop w-full max-w-container-max mx-auto">
         
         {/* Left Side: Brand Logo & Search */}
-        <div className="flex items-center gap-6 md:gap-8 flex-1 md:flex-initial">
-          <Link to="/" className="flex items-center gap-1.5 group select-none">
-            <span className="font-display text-3xl md:text-4xl font-extrabold tracking-widest text-on-background group-hover:text-primary transition-colors">
+        <div className="flex items-center gap-2 sm:gap-6 min-[1150px]:gap-8 shrink-0">
+          <Link to="/" className="flex items-center gap-1 group select-none shrink-0">
+            <span className="font-display text-xl sm:text-3xl md:text-4xl font-extrabold tracking-widest text-on-background group-hover:text-primary transition-colors">
               REBEL
             </span>
-            <span className="w-2 h-2 bg-primary rounded-full animate-pulse self-end mb-1"></span>
+            <span className="w-1.5 h-1.5 bg-primary rounded-full animate-pulse self-end mb-1"></span>
           </Link>
           
-          {/* Desktop Search Bar */}
-          <div className="hidden lg:flex relative group">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-on-surface-variant w-4 h-4" />
+          {/* Navbar Search Bar (Visible on all sizes) */}
+          <form onSubmit={handleSearchSubmit} className="flex relative group">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant w-3 h-3" />
             <input
               type="text"
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               onFocus={() => setShowSuggestions(true)}
               onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
-              placeholder="SEARCH THE DROP..."
-              className="pl-10 pr-4 py-2 bg-surface-container-high/50 hover:bg-surface-container-high/85 focus:bg-surface-container-highest border border-outline/10 focus:border-primary/40 rounded-full focus:outline-none focus:ring-1 focus:ring-primary/45 w-44 transition-all duration-300 focus:w-64 group-hover:w-64 text-xs tracking-wider uppercase text-on-background placeholder-on-surface-variant/70"
+              placeholder="SEARCH..."
+              className="pl-7.5 pr-3 py-1.5 bg-surface-container-high/50 hover:bg-surface-container-high/85 focus:bg-surface-container-highest border border-outline/10 focus:border-primary/40 rounded-full focus:outline-none focus:ring-1 focus:ring-primary/45 w-16 min-[360px]:w-24 sm:w-36 min-[1150px]:w-44 transition-all duration-300 focus:w-24 min-[360px]:focus:w-32 sm:focus:w-56 min-[1150px]:focus:w-64 group-hover:w-24 min-[360px]:group-hover:w-32 sm:group-hover:w-56 min-[1150px]:group-hover:w-64 text-[9px] sm:text-xs tracking-wider uppercase text-on-background placeholder-on-surface-variant/70"
             />
             {inputValue && (
               <button 
+                type="button"
                 onClick={() => setInputValue('')}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-primary text-[10px] tracking-wider uppercase font-bold"
               >
@@ -137,7 +156,7 @@ export default function Navbar() {
 
             {/* Suggestions Dropdown */}
             {showSuggestions && suggestions.length > 0 && (
-              <div className="absolute top-full left-0 right-0 mt-2 bg-surface border border-outline rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.9)] z-50 py-2.5 max-h-60 overflow-y-auto w-80 animate-fade-in">
+              <div className="absolute top-full left-0 mt-2 bg-surface border border-outline rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.9)] z-50 py-2.5 max-h-60 overflow-y-auto w-64 min-[380px]:w-72 sm:w-80 animate-fade-in">
                 {suggestions.map((p) => (
                   <button
                     key={p._id}
@@ -154,11 +173,11 @@ export default function Navbar() {
                 ))}
               </div>
             )}
-          </div>
+          </form>
         </div>
 
         {/* Center: Navigation Links */}
-        <nav className="hidden md:flex items-center gap-6 xl:gap-8">
+        <nav className="hidden min-[1150px]:flex items-center gap-6 xl:gap-8">
           {menuItems.map((item) => (
             <Link 
               key={item.name}
@@ -172,12 +191,12 @@ export default function Navbar() {
         </nav>
 
         {/* Right Side: Account Actions */}
-        <div className="flex items-center gap-3 md:gap-4">
+        <div className="flex items-center gap-1.5 sm:gap-3 md:gap-4 shrink-0">
           
           {/* Theme Toggle */}
           <button 
             onClick={toggleTheme}
-            className="p-2 text-on-surface-variant hover:text-primary transition-colors cursor-pointer"
+            className="hidden min-[1150px]:inline-flex p-2 text-on-surface-variant hover:text-primary transition-colors cursor-pointer"
             title={theme === 'dark' ? "Switch to Light Mode" : "Switch to Dark Mode"}
           >
             {theme === 'dark' ? <Sun className="w-5.5 h-5.5" /> : <Moon className="w-5.5 h-5.5" />}
@@ -187,7 +206,7 @@ export default function Navbar() {
           {(!user || user.role !== 'admin') && (
             <Link 
               to="/wishlist" 
-              className="relative p-2 text-on-surface-variant hover:text-primary transition-colors"
+              className="flex relative p-2 text-on-surface-variant hover:text-primary transition-colors"
               title="Wishlist"
             >
               <Heart className="w-5 h-5" />
@@ -220,7 +239,7 @@ export default function Navbar() {
               {user.role === 'admin' && (
                 <Link 
                   to="/admin" 
-                  className="p-2 text-primary hover:bg-primary/15 rounded-full transition-colors hidden sm:inline-flex"
+                  className="p-2 text-primary hover:bg-primary/15 rounded-full transition-colors hidden min-[1150px]:inline-flex"
                   title="Admin Dashboard"
                 >
                   <LayoutDashboard className="w-5 h-5" />
@@ -230,7 +249,7 @@ export default function Navbar() {
               {user.role !== 'admin' && (
                 <Link 
                   to="/my-orders" 
-                  className="p-2 text-on-surface-variant hover:text-on-background transition-colors hidden sm:inline-flex"
+                  className="p-2 text-on-surface-variant hover:text-on-background transition-colors hidden min-[1150px]:inline-flex"
                   title="My Orders"
                 >
                   <Package className="w-5 h-5" />
@@ -240,7 +259,7 @@ export default function Navbar() {
               {/* Profile Link */}
               <Link 
                 to="/profile"
-                className="flex items-center gap-2 px-3 py-1 bg-surface-container-high hover:bg-surface-container-highest transition-colors rounded-full border border-outline/10 cursor-pointer"
+                className="hidden min-[1150px]:flex items-center gap-2 px-3 py-1 bg-surface-container-high hover:bg-surface-container-highest transition-colors rounded-full border border-outline/10 cursor-pointer"
                 title="View Profile"
               >
                 <div className="w-6 h-6 rounded-full overflow-hidden bg-primary text-white flex items-center justify-center font-extrabold text-[10px] tracking-wider uppercase shrink-0">
@@ -256,7 +275,7 @@ export default function Navbar() {
               {/* Logout Button */}
               <button 
                 onClick={handleLogout}
-                className="p-2 text-on-surface-variant hover:text-primary rounded-full transition-colors"
+                className="hidden min-[1150px]:block p-2 text-on-surface-variant hover:text-primary rounded-full transition-colors"
                 title="Logout"
               >
                 <LogOut className="w-4.5 h-4.5" />
@@ -266,13 +285,13 @@ export default function Navbar() {
             <>
               <Link 
                 to="/login" 
-                className="text-on-surface-variant hover:text-on-background font-bold text-xs tracking-wider uppercase px-2 py-1.5 transition-colors"
+                className="hidden min-[1150px]:inline-flex text-on-surface-variant hover:text-on-background font-bold text-xs tracking-wider uppercase px-2 py-1.5 transition-colors"
               >
                 Log in
               </Link>
               <Link 
                 to="/register" 
-                className="bg-primary hover:bg-primary-container text-white px-5 py-2 rounded-full font-bold text-xs tracking-widest uppercase transition-all shadow-md hover:scale-105"
+                className="hidden min-[1150px]:inline-flex bg-primary hover:bg-primary-container text-white px-5 py-2 rounded-full font-bold text-xs tracking-widest uppercase transition-all shadow-md hover:scale-105"
               >
                 Join
               </Link>
@@ -282,7 +301,7 @@ export default function Navbar() {
           {/* Mobile Menu Button */}
           <button 
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden p-2 text-on-surface hover:bg-surface-container rounded-full transition-colors"
+            className="min-[1150px]:hidden p-2 text-on-surface hover:bg-surface-container rounded-full transition-colors"
             aria-label="Toggle menu"
           >
             {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -292,11 +311,11 @@ export default function Navbar() {
 
       {/* Mobile Drawer Modal */}
       {mobileMenuOpen && (
-        <div className="fixed inset-0 z-40 md:hidden bg-black/90 backdrop-blur-md top-[60px] animate-fade-in">
-          <div className="bg-background border-t border-outline/10 px-margin-mobile py-8 flex flex-col gap-8 h-[calc(100vh-60px)] overflow-y-auto">
+        <div className="fixed inset-0 z-40 min-[1150px]:hidden bg-black/90 backdrop-blur-md top-[60px] animate-fade-in">
+          <div className="bg-background border-t border-outline/10 px-margin-mobile py-8 flex flex-col gap-6 h-[calc(100vh-60px)] overflow-y-auto">
             
             {/* Search Input for Mobile */}
-            <div className="relative">
+            <form onSubmit={handleMobileSearchSubmit} className="relative">
               <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-on-surface-variant w-4 h-4" />
               <input
                 type="text"
@@ -305,69 +324,120 @@ export default function Navbar() {
                 placeholder="SEARCH REBEL..."
                 className="w-full pl-11 pr-4 py-2.5 bg-surface-container border border-outline/10 focus:border-primary rounded-full focus:outline-none text-xs uppercase tracking-wider text-on-background"
               />
+            </form>
+
+            {/* Quick Actions Row: Interface Theme Toggle */}
+            <div className="flex items-center justify-between p-4 bg-surface-container/50 rounded-2xl border border-outline/15 shadow-sm">
+              <span className="text-xs font-bold text-on-surface-variant uppercase tracking-wider">Interface Theme</span>
+              <button 
+                onClick={toggleTheme}
+                className="p-2.5 text-on-surface-variant hover:text-primary transition-colors cursor-pointer bg-surface-container rounded-full border border-outline/10"
+                title={theme === 'dark' ? "Switch to Light Mode" : "Switch to Dark Mode"}
+              >
+                {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+              </button>
             </div>
 
-            {/* Navigation links */}
-            <nav className="flex flex-col gap-4">
-              {menuItems.map((item) => (
-                <Link 
-                  key={item.name}
-                  to={item.path} 
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="font-display text-2xl tracking-widest text-on-background hover:text-primary transition-colors py-2 border-b border-outline/5"
-                >
-                  {item.name}
-                </Link>
-              ))}
-              
-              <div className="h-[1px] bg-outline/10 my-4" />
-
-              <Link 
-                to="/wishlist" 
-                onClick={() => setMobileMenuOpen(false)}
-                className="text-base font-bold uppercase tracking-wider text-on-surface-variant py-2 flex items-center gap-3.5"
-              >
-                <Heart className="w-5 h-5 text-primary" /> Wishlist {wishlistItems.length > 0 && `(${wishlistItems.length})`}
-              </Link>
-              
-              <Link 
-                to="/about" 
-                onClick={() => setMobileMenuOpen(false)}
-                className="text-base font-bold uppercase tracking-wider text-on-surface-variant py-2 flex items-center gap-3.5"
-              >
-                <User className="w-5 h-5 text-secondary" /> Brand Story
-              </Link>
-
-              {user && (
-                <>
+            {/* User Profile Card (if logged in) or Login/Join buttons (if logged out) - Placed at Top */}
+            {user ? (
+              <div className="flex flex-col gap-3.5 p-4 bg-surface-container/50 rounded-2xl border border-outline/15 shadow-sm">
+                <div className="flex items-center gap-3 pb-3 border-b border-outline/10">
+                  <div className="w-11 h-11 rounded-full overflow-hidden bg-primary text-white flex items-center justify-center font-extrabold text-base tracking-wider uppercase shrink-0 border border-primary/25">
+                    {user.image ? (
+                      <img src={user.image} alt={user.name} className="w-full h-full object-cover" />
+                    ) : (
+                      user.name?.charAt(0).toUpperCase()
+                    )}
+                  </div>
+                  <div className="flex flex-col min-w-0">
+                    <span className="text-sm font-bold text-on-surface truncate uppercase tracking-wider">{user.name}</span>
+                    <span className="text-[10px] text-on-surface-variant truncate tracking-wide font-medium">{user.email}</span>
+                  </div>
+                </div>
+                
+                {/* Account Navigation Quick Links inside Profile section */}
+                <div className="flex flex-col gap-3 mt-1">
                   {user.role === 'admin' && (
                     <Link 
                       to="/admin" 
                       onClick={() => setMobileMenuOpen(false)}
-                      className="text-base font-bold uppercase tracking-wider text-primary py-2 flex items-center gap-3.5"
+                      className="text-xs font-bold uppercase tracking-widest text-primary hover:text-primary-container flex items-center gap-3 py-1 transition-colors"
                     >
-                      <LayoutDashboard className="w-5 h-5" /> Admin Dashboard
+                      <LayoutDashboard className="w-4 h-4" /> Admin Dashboard
                     </Link>
                   )}
                   {user.role !== 'admin' && (
                     <Link 
                       to="/my-orders" 
                       onClick={() => setMobileMenuOpen(false)}
-                      className="text-base font-bold uppercase tracking-wider text-on-surface-variant py-2 flex items-center gap-3.5"
+                      className="text-xs font-bold uppercase tracking-widest text-on-surface-variant hover:text-on-surface flex items-center gap-3 py-1 transition-colors"
                     >
-                      <Package className="w-5 h-5" /> My Orders
+                      <Package className="w-4 h-4 text-primary" /> My Orders
                     </Link>
                   )}
                   <Link 
                     to="/profile" 
                     onClick={() => setMobileMenuOpen(false)}
-                    className="text-base font-bold uppercase tracking-wider text-on-surface-variant py-2 flex items-center gap-3.5"
+                    className="text-xs font-bold uppercase tracking-widest text-on-surface-variant hover:text-on-surface flex items-center gap-3 py-1 transition-colors"
                   >
-                    <User className="w-5 h-5" /> My Profile
+                    <User className="w-4 h-4 text-on-surface-variant/70" /> My Profile
                   </Link>
-                </>
-              )}
-            </nav>
+
+                  <button 
+                    onClick={() => {
+                      handleLogout();
+                      setMobileMenuOpen(false);
+                    }}
+                    className="w-full mt-1.5 py-2 bg-red-500/10 hover:bg-red-500/20 text-red-500 rounded-xl font-bold text-xs uppercase tracking-wider transition-colors flex items-center justify-center gap-2 cursor-pointer border border-red-500/10"
+                  >
+                    <LogOut className="w-4 h-4" />
+                    Logout
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 gap-3 p-4 bg-surface-container/50 rounded-2xl border border-outline/15 shadow-sm">
+                <Link 
+                  to="/login"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="w-full py-2.5 bg-surface-container-high hover:bg-surface-container-highest border border-outline/15 text-on-surface rounded-xl font-bold text-xs uppercase tracking-wider text-center transition-all cursor-pointer flex items-center justify-center"
+                >
+                  Log In
+                </Link>
+                <Link 
+                  to="/register"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="w-full py-2.5 bg-primary hover:bg-primary-container text-white rounded-xl font-bold text-xs uppercase tracking-wider text-center transition-all cursor-pointer flex items-center justify-center shadow-sm"
+                >
+                  Join
+                </Link>
+              </div>
+            )}
+
+            {/* Categories & Main Shop Links (Placed below Profile Card) */}
+            <div className="flex flex-col gap-2 mt-2">
+              <span className="text-[10px] font-bold text-on-surface-variant/50 uppercase tracking-widest px-1">Categories</span>
+              <nav className="flex flex-col gap-4 mt-1">
+                {menuItems.map((item) => (
+                  <Link 
+                    key={item.name}
+                    to={item.path} 
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="font-display text-2xl tracking-widest text-on-background hover:text-primary transition-colors py-2 border-b border-outline/5"
+                  >
+                    {item.name}
+                  </Link>
+                ))}
+                
+                <Link 
+                  to="/about" 
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="text-base font-bold uppercase tracking-wider text-on-surface-variant py-2.5 flex items-center gap-3.5 mt-2"
+                >
+                  <User className="w-5 h-5 text-secondary" /> Brand Story
+                </Link>
+              </nav>
+            </div>
           </div>
         </div>
       )}

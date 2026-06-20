@@ -7,6 +7,21 @@ import { Minus, Plus, Trash2, ArrowRight, ShoppingBag, Tag, Loader2, X, Shield, 
 import toast from 'react-hot-toast';
 import { createRazorpayOrder, verifyRazorpayPayment, getRazorpayKey, applyCoupon, getActiveCoupons } from '../api';
 
+const loadRazorpayScript = () => {
+  return new Promise((resolve) => {
+    if (window.Razorpay) {
+      resolve(true);
+      return;
+    }
+    const script = document.createElement('script');
+    script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+    script.async = true;
+    script.onload = () => resolve(true);
+    script.onerror = () => resolve(false);
+    document.body.appendChild(script);
+  });
+};
+
 export default function Cart() {
   const { items, updateQuantity, removeFromCart, getTotalPrice, addToCart } = useCartStore();
   const { user } = useAuthStore();
@@ -126,6 +141,15 @@ export default function Cart() {
 
     try {
       if (finalTotal <= 0) return toast.error("INVALID AMOUNT");
+
+      // Load Razorpay Script dynamically
+      toast.loading("INITIATING SECURE GATEWAY...", { id: "razorpay-loading" });
+      const scriptLoaded = await loadRazorpayScript();
+      toast.dismiss("razorpay-loading");
+      if (!scriptLoaded) {
+        toast.error("COULD NOT LOAD PAYMENT GATEWAY. PLEASE CHECK CONNECTION.");
+        return;
+      }
 
       // Fetch dynamic key from backend
       const { key } = await getRazorpayKey();
