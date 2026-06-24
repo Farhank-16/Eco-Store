@@ -1,0 +1,46 @@
+version: "3.8"
+
+services:
+  # ── Backend: Express API ──────────────────────────────────
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: rebel-backend
+    restart: unless-stopped
+    env_file:
+      - ./backend/.env
+    environment:
+      - NODE_ENV=production
+      - FRONTEND_URL=http://localhost
+    ports:
+      - "3000:3000"    # Expose for direct debugging (optional)
+    networks:
+      - ecostore-network
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+
+  # ── Frontend: Nginx + React SPA ───────────────────────────
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_BASE_URL: /api # API calls go through Nginx proxy
+    container_name: rebel-frontend
+    restart: unless-stopped
+    ports:
+      - "80:80" # Main entry point for the application
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - ecostore-network
+
+networks:
+  ecostore-network:
+    driver: bridge
