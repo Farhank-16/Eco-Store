@@ -33,6 +33,14 @@ export default function Cart() {
   const [couponLoading, setCouponLoading] = useState(false);
   const [activeCoupons, setActiveCoupons] = useState([]);
 
+  // Mock Payment states
+  const [showMockModal, setShowMockModal] = useState(false);
+  const [mockOrderData, setMockOrderData] = useState(null);
+  const [mockPaying, setMockPaying] = useState(false);
+  const [mockPaymentMethod, setMockPaymentMethod] = useState("upi"); // "upi" or "netbanking"
+  const [upiId, setUpiId] = useState("rebel@upi");
+  const [selectedBank, setSelectedBank] = useState("State Bank of India");
+
   // Recommendation states
   const [recommendations, setRecommendations] = useState([]);
   const [recLoading, setRecLoading] = useState(true);
@@ -132,6 +140,34 @@ export default function Cart() {
     toast.success("COUPON REMOVED");
   };
 
+  const handleMockPaymentSubmit = async () => {
+    if (!mockOrderData) return;
+    setMockPaying(true);
+    toast.loading("SIMULATING SECURE PAYMENT...", { id: "mock-payment" });
+    try {
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      await verifyRazorpayPayment({
+        razorpay_order_id: mockOrderData.id,
+        razorpay_payment_id: "pay_mock_" + Math.random().toString(36).substring(2, 9),
+        razorpay_signature: "sig_mock_" + Math.random().toString(36).substring(2, 9),
+        items: items,
+        amount: finalTotal,
+        couponCode: appliedCoupon ? appliedCoupon.code : undefined,
+      });
+      toast.dismiss("mock-payment");
+      toast.success("PAYMENT SUCCESSFUL!");
+      useCartStore.getState().clearCart();
+      setShowMockModal(false);
+      setMockOrderData(null);
+    } catch (err) {
+      toast.dismiss("mock-payment");
+      console.error("Mock verification error:", err);
+      toast.error("PAYMENT VERIFICATION FAILED!");
+    } finally {
+      setMockPaying(false);
+    }
+  };
+
   const handleCheckout = async () => {
     if (!user) {
       toast.error("PLEASE LOG IN");
@@ -155,6 +191,12 @@ export default function Cart() {
       const { key } = await getRazorpayKey();
       
       const order = await createRazorpayOrder(finalTotal);
+
+      if (order.isMock) {
+        setMockOrderData(order);
+        setShowMockModal(true);
+        return;
+      }
       
       const options = {
         key: key, 
@@ -507,6 +549,122 @@ export default function Cart() {
           )}
         </section>
       </main>
+
+      {showMockModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-xs p-4 animate-fade-in">
+          <div className="bg-surface border border-outline/10 w-full max-w-md p-6 relative flex flex-col shadow-2xl">
+            <button 
+              onClick={() => { setShowMockModal(false); setMockOrderData(null); }}
+              className="absolute top-4 right-4 text-on-surface-variant hover:text-primary transition-colors cursor-pointer"
+            >
+              <X className="w-5 h-5" />
+            </button>
+            
+            <div className="flex items-center gap-3 border-b border-outline/10 pb-4 mb-6">
+              <div className="w-10 h-10 bg-primary/10 border border-primary/20 flex items-center justify-center">
+                <Flame className="w-5 h-5 text-primary animate-pulse" />
+              </div>
+              <div>
+                <h3 className="font-display text-sm tracking-widest text-on-surface uppercase">REBEL GATEWAY</h3>
+                <p className="text-[10px] text-primary font-bold uppercase tracking-widest">DEMO / SIMULATION MODE</p>
+              </div>
+            </div>
+
+            <div className="bg-primary/5 border border-primary/20 p-4 mb-6">
+              <p className="text-[10px] text-on-surface-variant uppercase font-bold tracking-wider leading-relaxed">
+                Razorpay API returned 401 Unauthorized. Using local UPI/Net Banking simulation. No real money will be charged.
+              </p>
+            </div>
+
+            {/* Tabs */}
+            <div className="flex border-b border-outline/10 mb-6">
+              <button
+                type="button"
+                onClick={() => setMockPaymentMethod("upi")}
+                className={`flex-1 pb-3 text-xs font-display tracking-widest uppercase transition-all border-b-2 cursor-pointer ${
+                  mockPaymentMethod === "upi"
+                    ? "border-primary text-primary font-bold"
+                    : "border-transparent text-on-surface-variant hover:text-on-surface"
+                }`}
+              >
+                UPI
+              </button>
+              <button
+                type="button"
+                onClick={() => setMockPaymentMethod("netbanking")}
+                className={`flex-1 pb-3 text-xs font-display tracking-widest uppercase transition-all border-b-2 cursor-pointer ${
+                  mockPaymentMethod === "netbanking"
+                    ? "border-primary text-primary font-bold"
+                    : "border-transparent text-on-surface-variant hover:text-on-surface"
+                }`}
+              >
+                Net Banking
+              </button>
+            </div>
+
+            {/* Tab Contents */}
+            <div className="space-y-4 min-h-[120px]">
+              {mockPaymentMethod === "upi" ? (
+                <div>
+                  <label className="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest block mb-1.5">UPI ID (VPA)</label>
+                  <input
+                    type="text"
+                    value={upiId}
+                    onChange={(e) => setUpiId(e.target.value)}
+                    placeholder="example@upi"
+                    className="w-full bg-background border border-outline/25 px-4 py-2.5 text-xs text-on-surface focus:outline-none focus:border-primary transition-all uppercase tracking-widest"
+                  />
+                  <span className="text-[9px] text-on-surface-variant uppercase mt-1.5 block font-bold">
+                    Enter any mock UPI ID (e.g. user@paytm, name@ybl)
+                  </span>
+                </div>
+              ) : (
+                <div>
+                  <label className="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest block mb-1.5">Select Bank</label>
+                  <select
+                    value={selectedBank}
+                    onChange={(e) => setSelectedBank(e.target.value)}
+                    className="w-full bg-background border border-outline/25 px-4 py-2.5 text-xs text-on-surface focus:outline-none focus:border-primary transition-all uppercase tracking-widest"
+                  >
+                    <option value="State Bank of India">State Bank of India (SBI)</option>
+                    <option value="HDFC Bank">HDFC Bank</option>
+                    <option value="ICICI Bank">ICICI Bank</option>
+                    <option value="Axis Bank">Axis Bank</option>
+                    <option value="Kotak Mahindra Bank">Kotak Mahindra Bank</option>
+                    <option value="Punjab National Bank">Punjab National Bank</option>
+                  </select>
+                  <span className="text-[9px] text-on-surface-variant uppercase mt-1.5 block font-bold">
+                    Choose a bank to simulate bank transfer redirection.
+                  </span>
+                </div>
+              )}
+            </div>
+
+            <div className="space-y-4 mt-6">
+              <div className="pt-4 border-t border-outline/10 flex justify-between items-end mb-6">
+                <span className="text-[10px] text-on-surface-variant font-bold uppercase tracking-widest">Amount to Pay</span>
+                <span className="text-xl text-primary font-display font-extrabold">₹{finalTotal}</span>
+              </div>
+
+              <button 
+                onClick={handleMockPaymentSubmit}
+                disabled={mockPaying}
+                className="w-full bg-primary hover:bg-primary-container text-white py-3.5 font-display text-xs tracking-widest uppercase transition-colors flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+              >
+                {mockPaying ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" /> PROCESSING...
+                  </>
+                ) : (
+                  <>
+                    COMPLETE SIMULATION PAYMENT <ArrowRight className="w-4 h-4" />
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
